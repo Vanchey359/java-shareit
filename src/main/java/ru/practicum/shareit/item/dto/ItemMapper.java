@@ -14,6 +14,7 @@ public class ItemMapper {
     public ItemMapper(UserDao userDao) {
         this.userDao = userDao;
     }
+
     public ItemDto toItemDto(Item item) {
         return new ItemDto(
                 item.getId(),

@@ -46,6 +46,7 @@ public class UserServiceImpl implements UserService {
         }
         return usersDto;
     }
+
     @Override
     public UserDto updateUser(Long userId, UserDto updatedUser) {
         if (!checkUser(userId)) {
@@ -68,13 +69,14 @@ public class UserServiceImpl implements UserService {
         }
         userDao.removeUser(userId);
     }
+
     @Override
     public boolean checkUser(Long userId) {
         return userDao.getAllUsers().stream().anyMatch(user -> user.getId() == userId);
     }
 
     private boolean checkEmail(String email) {
-        return userDao.getAllUsers().stream().anyMatch(user ->user.getEmail().equals(email));
+        return userDao.getAllUsers().stream().anyMatch(user -> user.getEmail().equals(email));
     }
 
     private User validate(UserDto userDto, boolean isNew) {
