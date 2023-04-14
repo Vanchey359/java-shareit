@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkUser(Long userId) {
-        return userDao.getAllUsers().stream().anyMatch(user -> user.getId() == userId);
+        return userDao.getAllUsers().stream().anyMatch(user -> user.getId().equals(userId));
     }
 
     private boolean checkEmail(String email) {

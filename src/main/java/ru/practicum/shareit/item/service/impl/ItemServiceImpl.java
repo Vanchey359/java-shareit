@@ -79,7 +79,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void checkItemById(Long itemId, Long ownerId) {
-        if (itemDao.getAllItems(ownerId).stream().noneMatch(item -> item.getId() == itemId)) {
+        if (itemDao.getAllItems(ownerId).stream().noneMatch(item -> item.getId().equals(itemId))) {
             throw new NotFoundException("Item not found");
         }
     }

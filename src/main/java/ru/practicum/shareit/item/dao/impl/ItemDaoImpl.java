@@ -55,7 +55,7 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public List<Item> getAllItems(Long ownerId) {
         return items.values().stream()
-                .filter(item -> item.getOwner().getId() == ownerId)
+                .filter(item -> item.getOwner().getId().equals(ownerId))
                 .collect(Collectors.toList());
     }
 
