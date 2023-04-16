@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class ItemServiceImpl implements ItemService {
 
     @Qualifier("InMemoryItemDao")
@@ -33,6 +35,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto createItem(Long ownerId, ItemDto itemDto) {
         checkOwnerById(ownerId);
         Item item = itemDao.createItem(ownerId, itemMapper.toItem(ownerId, itemDto));
+        log.info("Created item: {}", item);
         return itemMapper.toItemDto(item);
     }
 
@@ -41,6 +44,7 @@ public class ItemServiceImpl implements ItemService {
         checkOwnerById(ownerId);
         checkItemById(itemId, ownerId);
         Item item = itemDao.updateItem(itemId, ownerId, itemDto);
+        log.info("Item with id: {} was updated", item.getId());
         return itemMapper.toItemDto(item);
     }
 
@@ -48,6 +52,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto getItemById(Long ownerId, Long itemId) {
         checkOwnerById(ownerId);
         Item item = itemDao.getItemById(ownerId, itemId);
+        log.info("Item with id {} found: {}", itemId, item);
         return itemMapper.toItemDto(item);
     }
 
@@ -59,6 +64,7 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : items) {
             itemsDto.add(itemMapper.toItemDto(item));
         }
+        log.info("All items found: {}", itemsDto.size());
         return itemsDto;
     }
 
@@ -69,17 +75,20 @@ public class ItemServiceImpl implements ItemService {
         for (Item item : items) {
             itemsDto.add(itemMapper.toItemDto(item));
         }
+        log.info("Items found: {}", itemsDto.size());
         return itemsDto;
     }
 
     private void checkOwnerById(Long ownerId) {
         if (!userService.checkUser(ownerId)) {
+            log.error("checkOwner error: Owner with this id not found");
             throw new NotFoundException("Owner with this id not found");
         }
     }
 
     private void checkItemById(Long itemId, Long ownerId) {
         if (itemDao.getAllItems(ownerId).stream().noneMatch(item -> item.getId().equals(itemId))) {
+            log.error("checkItem error: Item not found");
             throw new NotFoundException("Item not found");
         }
     }
