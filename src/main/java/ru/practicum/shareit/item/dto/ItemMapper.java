@@ -25,12 +25,12 @@ public class ItemMapper {
     }
 
     public Item toItem(Long ownerId, ItemDto itemDto) {
-        return new Item(
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                userDao.getUserById(ownerId),
-                null
-        );
+        return  Item.builder()
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
+                .owner(userDao.getUserById(ownerId))
+                .request(null)
+                .build();
     }
 }
