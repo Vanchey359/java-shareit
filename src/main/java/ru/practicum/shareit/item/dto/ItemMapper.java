@@ -1,36 +1,31 @@
 package ru.practicum.shareit.item.dto;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.dao.UserDao;
+import ru.practicum.shareit.user.model.User;
 
-@Component
+import java.util.ArrayList;
+import java.util.List;
+
 public class ItemMapper {
-
-    private final UserDao userDao;
-
-    @Autowired
-    public ItemMapper(UserDao userDao) {
-        this.userDao = userDao;
+    public static ItemDto toItemDto(Item item) {
+        ItemDto result = new ItemDto();
+        result.setId(item.getId());
+        result.setName(item.getName());
+        result.setDescription(item.getDescription());
+        result.setAvailable(item.getAvailable());
+        return result;
     }
 
-    public ItemDto toItemDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable()
-        );
+    public static Item toItemModel(ItemDto itemDto, User owner) {
+        return new Item(itemDto.getId(), itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(), owner);
     }
 
-    public Item toItem(Long ownerId, ItemDto itemDto) {
-        return  Item.builder()
-                .name(itemDto.getName())
-                .description(itemDto.getDescription())
-                .available(itemDto.getAvailable())
-                .owner(userDao.getUserById(ownerId))
-                .request(null)
-                .build();
+    public static List<ItemDto> toItemDtoList(List<Item> items) {
+        List<ItemDto> result = new ArrayList<>();
+        for (Item item : items) {
+            ItemDto itemDto = toItemDto(item);
+            result.add(itemDto);
+        }
+        return result;
     }
 }
