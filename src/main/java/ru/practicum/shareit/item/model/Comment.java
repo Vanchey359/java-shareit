@@ -19,15 +19,15 @@ public class Comment {
     private Long id;
 
     @NotBlank
-    @Column(length = 500, nullable = false)
+    @Column(length = 500)
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "item_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "item_id", referencedColumnName = "id")
     private Item item;
 
     @ManyToOne
-    @JoinColumn(name = "author_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "author_id", referencedColumnName = "id")
     private User author;
 
     private LocalDateTime created;

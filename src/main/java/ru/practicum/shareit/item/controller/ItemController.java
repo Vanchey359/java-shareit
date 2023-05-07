@@ -25,40 +25,41 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final String userHeaderId = "X-Sharer-User-Id";
+    private final ItemMapper itemMapper;
+    private final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemDto create(@Valid @RequestBody ItemDto itemDto,
-                          @NotNull @RequestHeader(userHeaderId) Long userId) {
+                          @NotNull @RequestHeader(USER_HEADER_ID) Long userId) {
         return itemService.create(itemDto, userId);
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto update(@RequestBody ItemDto itemDto,
                           @NotNull @PathVariable Long itemId,
-                          @NotNull @RequestHeader(userHeaderId) Long userId) {
+                          @NotNull @RequestHeader(USER_HEADER_ID) Long userId) {
         return itemService.update(itemDto, itemId, userId);
     }
 
     @GetMapping("/{itemId}")
     public ItemDto findById(@NotNull @PathVariable Long itemId,
-                            @NotNull @RequestHeader(userHeaderId) Long userId) {
+                            @NotNull @RequestHeader(USER_HEADER_ID) Long userId) {
         return itemService.findById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemDto> getAllByUserId(@NotNull @RequestHeader(userHeaderId) Long userId) {
+    public List<ItemDto> getAllByUserId(@NotNull @RequestHeader(USER_HEADER_ID) Long userId) {
         return itemService.getAllByUserId(userId);
     }
 
     @GetMapping("/search")
     public List<ItemDto> findByRequest(@RequestParam String text) {
         List<Item> foundItems = itemService.findByRequest(text);
-        return ItemMapper.toItemDtoList(foundItems);
+        return itemMapper.toDtos(foundItems);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto createComment(@PathVariable Long itemId, @RequestHeader(userHeaderId) Long userId,
+    public CommentDto createComment(@PathVariable Long itemId, @RequestHeader(USER_HEADER_ID) Long userId,
                                     @Valid @RequestBody CommentDto commentDto) {
         return itemService.createComment(itemId, userId, commentDto);
     }

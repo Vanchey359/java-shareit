@@ -19,11 +19,11 @@ public class Item {
     private Long id;
 
     @NotBlank
-    @Column(length = 255, nullable = false)
+    @Column(length = 255)
     private String name;
 
     @NotBlank
-    @Column(length = 500, nullable = false)
+    @Column(length = 500)
     private String description;
 
     @NotNull
@@ -32,6 +32,6 @@ public class Item {
     private Boolean available;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "owner_id", referencedColumnName = "id")
     private User owner;
 }

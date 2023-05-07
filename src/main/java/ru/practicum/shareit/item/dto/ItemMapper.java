@@ -1,13 +1,15 @@
 package ru.practicum.shareit.item.dto;
 
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+@Component
 public class ItemMapper {
-    public static ItemDto toItemDto(Item item) {
+    public ItemDto toDto(Item item) {
         ItemDto result = new ItemDto();
         result.setId(item.getId());
         result.setName(item.getName());
@@ -16,16 +18,13 @@ public class ItemMapper {
         return result;
     }
 
-    public static Item toItemModel(ItemDto itemDto, User owner) {
+    public Item toItem(ItemDto itemDto, User owner) {
         return new Item(itemDto.getId(), itemDto.getName(), itemDto.getDescription(), itemDto.getAvailable(), owner);
     }
 
-    public static List<ItemDto> toItemDtoList(List<Item> items) {
-        List<ItemDto> result = new ArrayList<>();
-        for (Item item : items) {
-            ItemDto itemDto = toItemDto(item);
-            result.add(itemDto);
-        }
-        return result;
+    public List<ItemDto> toDtos(List<Item> items) {
+        return items.stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 }

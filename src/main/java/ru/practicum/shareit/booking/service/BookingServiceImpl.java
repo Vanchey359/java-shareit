@@ -27,7 +27,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-
+    private final BookingMapper bookingMapper;
     private final Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
     @Transactional
@@ -44,7 +44,7 @@ public class BookingServiceImpl implements BookingService {
         if (!item.getAvailable()) {
             throw new BadRequestException("item:" + item.getId() + " is not available");
         }
-        Booking booking = BookingMapper.toBooking(bookingBriefDto);
+        Booking booking = bookingMapper.toBooking(bookingBriefDto);
         if (booking.getEnd().isBefore(booking.getStart()) || booking.getEnd().isEqual(booking.getStart())) {
             throw new BadRequestException("wrong booking start and end periods");
         }
@@ -54,7 +54,7 @@ public class BookingServiceImpl implements BookingService {
 
         bookingRepository.save(booking);
 
-        return BookingMapper.toBookingDto(booking);
+        return bookingMapper.toDto(booking);
     }
 
     @Transactional
@@ -75,7 +75,7 @@ public class BookingServiceImpl implements BookingService {
         }
         bookingRepository.save(booking);
 
-        return BookingMapper.toBookingDto(booking);
+        return bookingMapper.toDto(booking);
     }
 
     @Transactional(readOnly = true)
@@ -115,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
 
-        return bookingsList.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return bookingsList.stream().map(bookingMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -135,7 +135,7 @@ public class BookingServiceImpl implements BookingService {
                 break;
 
             case CURRENT:
-                bookingDtoList.addAll(bookingRepository.findAllByBookerAndStartBeforeAndEndAfter(user,
+                bookingDtoList.addAll(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfter(userId,
                         LocalDateTime.now(), LocalDateTime.now(), sort));
                 break;
 
@@ -156,7 +156,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
 
-        return bookingDtoList.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return bookingDtoList.stream().map(bookingMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
@@ -168,6 +168,6 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("access denied");
         }
 
-        return BookingMapper.toBookingDto(booking);
+        return bookingMapper.toDto(booking);
     }
 }
