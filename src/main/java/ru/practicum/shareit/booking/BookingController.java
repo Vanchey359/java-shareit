@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
     private final BookingService bookingService;
-    private final String USER_HEADER_ID = "X-Sharer-User-Id";
+    private static final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @PostMapping
     public BookingDto create(@Valid @RequestBody BookingBriefDto bookingBriefDto,
