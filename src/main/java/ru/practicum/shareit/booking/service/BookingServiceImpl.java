@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingBriefDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -83,39 +85,39 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingDto> getAllByOwner(Long userId, BookingState state) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
-        List<Booking> bookingsList = new ArrayList<>();
+        List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookingsList.addAll(bookingRepository.findAllByItemOwner(user, sort));
+                bookings.addAll(bookingRepository.findAllByItemOwner(user, sort));
                 break;
 
             case FUTURE:
-                bookingsList.addAll(bookingRepository.findAllByItemOwnerAndStartAfter(user, LocalDateTime.now(), sort));
+                bookings.addAll(bookingRepository.findAllByItemOwnerAndStartAfter(user, LocalDateTime.now(), sort));
                 break;
 
             case CURRENT:
-                bookingsList.addAll(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(user,
+                bookings.addAll(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(user,
                         LocalDateTime.now(), LocalDateTime.now(), sort));
                 break;
 
             case PAST:
-                bookingsList.addAll(bookingRepository.findAllByItemOwnerAndEndBefore(user,
+                bookings.addAll(bookingRepository.findAllByItemOwnerAndEndBefore(user,
                         LocalDateTime.now(), sort));
                 break;
 
             case WAITING:
-                bookingsList.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(user, BookingStatus.WAITING, sort));
+                bookings.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(user, BookingStatus.WAITING, sort));
                 break;
 
             case REJECTED:
-                bookingsList.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(user, BookingStatus.REJECTED, sort));
+                bookings.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(user, BookingStatus.REJECTED, sort));
                 break;
 
             default:
                 throw new BadRequestException("Unknown state: UNSUPPORTED_STATUS");
         }
 
-        return bookingsList.stream().map(bookingMapper::toDto).collect(Collectors.toList());
+        return bookings.stream().map(bookingMapper::toDto).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
