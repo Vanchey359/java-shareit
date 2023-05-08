@@ -1,47 +1,47 @@
 package ru.practicum.shareit.user.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/users")
+@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
+    private final UserMapper userMapper;
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
-        return userService.createUser(userDto);
+    public UserDto create(@Valid @RequestBody UserDto userDto) {
+        User user = userMapper.toUser(userDto);
+        return userMapper.toDto(userService.create(user));
     }
 
     @GetMapping("/{userId}")
-    public UserDto getUserById(@PathVariable("userId") long userId) {
-        return userService.getUserById(userId);
+    public UserDto findById(@NotNull @PathVariable Long userId) {
+        return userMapper.toDto(userService.findById(userId));
     }
 
     @GetMapping
-    public List<UserDto> getAllUsers() {
-        return new ArrayList<UserDto>(userService.getAllUsers());
+    public List<UserDto> getAll() {
+        return userMapper.toDtos(userService.getAll());
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@PathVariable("userId") Long userId, @Valid @RequestBody UserDto userDto) {
-        return userService.updateUser(userId, userDto);
+    public UserDto update(@NotNull @PathVariable Long userId,
+                          @RequestBody UserDto userDto) {
+        return userMapper.toDto(userService.update(userId, userDto));
     }
 
     @DeleteMapping("/{userId}")
-    public void removeUser(@PathVariable("userId") Long userId) {
-        userService.removeUser(userId);
+    public void delete(@NotNull @PathVariable Long userId) {
+        userService.delete(userId);
     }
-
 }
