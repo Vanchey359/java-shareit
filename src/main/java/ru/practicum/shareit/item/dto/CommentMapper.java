@@ -5,7 +5,7 @@ import ru.practicum.shareit.item.model.Comment;
 
 @Component
 public class CommentMapper {
-    public Comment toComment(CommentDto commentDto) {
+    public static Comment toComment(CommentDto commentDto) {
         Comment result = new Comment();
         result.setId(commentDto.getId());
         result.setText(commentDto.getText());
@@ -13,7 +13,7 @@ public class CommentMapper {
         return result;
     }
 
-    public CommentDto toDto(Comment comment) {
+    public static CommentDto toDto(Comment comment) {
         CommentDto result = new CommentDto();
         result.setId(comment.getId());
         result.setText(comment.getText());
