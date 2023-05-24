@@ -64,6 +64,25 @@ public class BookingServiceTest {
     }
 
     @Test
+    public void createBookingTest() {
+
+        when(userRepository.findById(any(Long.class)))
+                .thenReturn(Optional.ofNullable(owner));
+
+        when(itemRepository.findById(any(Long.class)))
+                .thenReturn(Optional.ofNullable(item));
+
+        when(bookingRepository.save(any(Booking.class)))
+                .thenReturn(booking);
+
+        BookingDto result = bookingService.create(bookingBriefDto, 1L);
+
+        assertEquals(bookingDto.getItem().getId(), result.getItem().getId());
+        assertEquals(bookingDto.getStart(), result.getStart());
+        assertEquals(bookingDto.getEnd(), result.getEnd());
+    }
+
+    @Test
     public void approveBookingTest() {
         booking.setStatus(BookingStatus.WAITING);
 
@@ -281,6 +300,24 @@ public class BookingServiceTest {
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
+    }
+
+    @Test
+    public void createBookingWrongDateTest() {
+        when(userRepository.findById(any(Long.class)))
+                .thenReturn(Optional.ofNullable(owner));
+
+        when(itemRepository.findById(any(Long.class)))
+                .thenReturn(Optional.ofNullable(item));
+
+        bookingBriefDto.setStart(LocalDateTime.now());
+        bookingBriefDto.setEnd(LocalDateTime.now().minusDays(1));
+
+        Exception e = assertThrows(BadRequestException.class,
+                () -> {
+                    bookingService.create(bookingBriefDto, 1L);
+                });
+        assertNotNull(e);
     }
 
     @Test
