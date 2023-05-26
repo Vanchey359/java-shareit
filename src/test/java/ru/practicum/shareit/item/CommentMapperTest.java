@@ -13,6 +13,7 @@ public class CommentMapperTest {
     private Comment comment;
     private CommentDto commentDto;
     private final CommentMapper commentMapper = new CommentMapper();
+
     @BeforeEach
     private void beforeEach() {
         comment = new Comment(1L, "Text", new Item(), new User(), null);
