@@ -1,6 +1,8 @@
 package ru.practicum.shareit.item.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final ItemMapper itemMapper = new ItemMapper();
     private static final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @PostMapping
@@ -52,7 +55,8 @@ public class ItemController {
                                         @RequestParam(defaultValue = "0") int from,
                                         @RequestParam(defaultValue = "10") int size) {
         checkSearchingParams(from, size);
-        return itemService.getAllByUserId(userId, from, size);
+        Pageable pageRequest = PageRequest.of(from / size, size);
+        return itemService.getAllByUserId(userId, pageRequest);
     }
 
     @GetMapping("/search")
@@ -60,8 +64,9 @@ public class ItemController {
                                        @RequestParam(defaultValue = "0") int from,
                                        @RequestParam(defaultValue = "10") int size) {
         checkSearchingParams(from, size);
-        List<Item> foundItems = itemService.findByRequest(text, from, size);
-        return ItemMapper.toDtos(foundItems);
+        Pageable pageRequest = PageRequest.of(from / size, size);
+        List<Item> foundItems = itemService.findByRequest(text, pageRequest);
+        return itemMapper.toDtos(foundItems);
     }
 
     @PostMapping("/{itemId}/comment")

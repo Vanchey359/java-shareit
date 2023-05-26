@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-    List<Item> findAllByRequestId(Long requestId);
+    List<Item> findByRequestId(Long requestId);
 
-    Page<Item> findAllByOwnerId(Long ownerId, Pageable pageable);
+    Page<Item> findByOwnerId(Long ownerId, Pageable pageable);
 }

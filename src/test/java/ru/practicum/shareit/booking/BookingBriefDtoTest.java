@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class BookingBriefDtoTest {
     @Autowired
-    JacksonTester<BookingBriefDto> json;
+    private JacksonTester<BookingBriefDto> json;
 
     @Test
     @SneakyThrows

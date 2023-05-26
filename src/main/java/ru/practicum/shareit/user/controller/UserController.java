@@ -1,7 +1,14 @@
 package ru.practicum.shareit.user.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
@@ -16,27 +23,28 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserMapper userMapper = new UserMapper();
 
     @PostMapping
     public UserDto create(@Valid @RequestBody UserDto userDto) {
-        User user = UserMapper.toUser(userDto);
-        return UserMapper.toDto(userService.create(user));
+        User user = userMapper.toUser(userDto);
+        return userMapper.toDto(userService.create(user));
     }
 
     @GetMapping("/{userId}")
     public UserDto findById(@NotNull @PathVariable Long userId) {
-        return UserMapper.toDto(userService.findById(userId));
+        return userMapper.toDto(userService.findById(userId));
     }
 
     @GetMapping
     public List<UserDto> getAll() {
-        return UserMapper.toDtos(userService.getAll());
+        return userMapper.toDtos(userService.getAll());
     }
 
     @PatchMapping("/{userId}")
     public UserDto update(@NotNull @PathVariable Long userId,
                           @RequestBody UserDto userDto) {
-        return UserMapper.toDto(userService.update(userId, userDto));
+        return userMapper.toDto(userService.update(userId, userDto));
     }
 
     @DeleteMapping("/{userId}")

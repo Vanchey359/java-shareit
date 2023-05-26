@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 public class ItemMapperTest {
     private Item item;
     private ItemDto itemDto;
+    private final ItemMapper itemMapper = new ItemMapper();
 
     @BeforeEach
     private void beforeEach() {
@@ -28,7 +29,7 @@ public class ItemMapperTest {
 
     @Test
     public void toItemDtoTest() {
-        ItemDto dto = ItemMapper.toDto(item);
+        ItemDto dto = itemMapper.toDto(item);
 
         assertEquals(dto.getId(), item.getId());
         assertEquals(dto.getName(), item.getName());
@@ -37,7 +38,7 @@ public class ItemMapperTest {
 
     @Test
     public void toItemModelTest() {
-        Item newItem = ItemMapper.toItem(itemDto, new User());
+        Item newItem = itemMapper.toItem(itemDto, new User());
 
         assertEquals(newItem.getId(), itemDto.getId());
         assertEquals(newItem.getName(), itemDto.getName());
@@ -47,7 +48,7 @@ public class ItemMapperTest {
     @Test
     public void toItemDtoListTest() {
         List<Item> items = List.of(item);
-        List<ItemDto> itemDtoList = ItemMapper.toDtos(items);
+        List<ItemDto> itemDtoList = itemMapper.toDtos(items);
 
         assertFalse(itemDtoList.isEmpty());
         assertEquals(items.get(0).getId(), itemDtoList.get(0).getId());

@@ -24,10 +24,15 @@ import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(BookingController.class)
 @AutoConfigureMockMvc
@@ -112,7 +117,7 @@ public class BookingControllerTest {
     @Test
     @SneakyThrows
     public void getAllByUserTest() {
-        when(bookingService.getAllByUser(any(Long.class), any(BookingState.class), any(Integer.class), any(Integer.class)))
+        when(bookingService.getAllByUser(any(Long.class), any(BookingState.class), any()))
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/bookings")
@@ -124,13 +129,13 @@ public class BookingControllerTest {
                 .andExpect(content().json("[]"));
 
         verify(bookingService, times(1))
-                .getAllByUser(any(Long.class), any(BookingState.class), any(Integer.class), any(Integer.class));
+                .getAllByUser(any(Long.class), any(BookingState.class), any());
     }
 
     @Test
     @SneakyThrows
     public void getAllByOwnerTest() {
-        when(bookingService.getAllByOwner(any(Long.class), any(BookingState.class), any(Integer.class), any(Integer.class)))
+        when(bookingService.getAllByOwner(any(Long.class), any(BookingState.class), any()))
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/bookings/owner")
@@ -141,6 +146,6 @@ public class BookingControllerTest {
                 .andExpect(content().json("[]"));
 
         verify(bookingService, times(1))
-                .getAllByOwner(any(Long.class), any(BookingState.class), any(Integer.class), any(Integer.class));
+                .getAllByOwner(any(Long.class), any(BookingState.class), any());
     }
 }

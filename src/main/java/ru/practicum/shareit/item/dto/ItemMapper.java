@@ -9,7 +9,7 @@ import java.util.List;
 
 @Component
 public class ItemMapper {
-    public static ItemDto toDto(Item item) {
+    public ItemDto toDto(Item item) {
         ItemDto mappedItem = new ItemDto();
         mappedItem.setId(item.getId());
         mappedItem.setName(item.getName());
@@ -19,7 +19,7 @@ public class ItemMapper {
         return mappedItem;
     }
 
-    public static Item toItem(ItemDto itemDto, User owner) {
+    public Item toItem(ItemDto itemDto, User owner) {
         Item mappedItem = new Item();
         mappedItem.setId(itemDto.getId());
         mappedItem.setName(itemDto.getName());
@@ -29,7 +29,7 @@ public class ItemMapper {
         return mappedItem;
     }
 
-    public static List<ItemDto> toDtos(List<Item> items) {
+    public List<ItemDto> toDtos(List<Item> items) {
         List<ItemDto> result = new ArrayList<>();
         for (Item item : items) {
             ItemDto itemDto = toDto(item);

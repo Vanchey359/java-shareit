@@ -15,9 +15,12 @@ import ru.practicum.shareit.user.service.impl.UserServiceImpl;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
@@ -29,6 +32,7 @@ public class UserServiceTest {
     private UserServiceImpl userService;
 
     private User user;
+    private final UserMapper userMapper = new UserMapper();
 
     @BeforeEach
     private void beforeEach() {
@@ -56,7 +60,7 @@ public class UserServiceTest {
     @Test
     void updateTest() {
         user.setName("updated name");
-        UserDto inputDto = UserMapper.toDto(user);
+        UserDto inputDto = userMapper.toDto(user);
 
         when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
 

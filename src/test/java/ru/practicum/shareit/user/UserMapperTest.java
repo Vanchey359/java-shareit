@@ -7,10 +7,12 @@ import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class UserMapperTest {
     private User user;
+    private final UserMapper userMapper = new UserMapper();
 
     @BeforeEach
     private void beforeEach() {
@@ -19,7 +21,7 @@ public class UserMapperTest {
 
     @Test
     public void toUserDtoTest() {
-        UserDto dto = UserMapper.toDto(user);
+        UserDto dto = userMapper.toDto(user);
 
         assertEquals(user.getId(), dto.getId());
         assertEquals(user.getName(), dto.getName());
@@ -29,7 +31,7 @@ public class UserMapperTest {
     @Test
     public void toUserModelTest() {
         UserDto dto = new UserDto(1L, "Mike", "Mike@yandex.ru");
-        User newUser = UserMapper.toUser(dto);
+        User newUser = userMapper.toUser(dto);
 
         assertEquals(dto.getId(), newUser.getId());
         assertEquals(dto.getName(), newUser.getName());
@@ -39,7 +41,7 @@ public class UserMapperTest {
     @Test
     public void toUserDtoListTest() {
         List<User> users = List.of(user);
-        List<UserDto> userDtoList = UserMapper.toDtos(users);
+        List<UserDto> userDtoList = userMapper.toDtos(users);
 
         assertFalse(userDtoList.isEmpty());
         assertEquals(users.get(0).getId(), userDtoList.get(0).getId());

@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class CommentDtoTest {
     @Autowired
-    JacksonTester<CommentDto> json;
+    private JacksonTester<CommentDto> json;
 
     @Test
     @SneakyThrows

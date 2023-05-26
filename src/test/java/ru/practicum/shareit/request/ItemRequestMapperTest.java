@@ -12,6 +12,7 @@ public class ItemRequestMapperTest {
     private ItemRequest itemRequest;
 
     private ItemRequestDto itemRequestDto;
+    private final ItemRequestMapper itemRequestMapper = new ItemRequestMapper();
 
     @BeforeEach
     private void beforeEach() {
@@ -24,7 +25,7 @@ public class ItemRequestMapperTest {
 
     @Test
     public void toItemRequestDtoTest() {
-        ItemRequestDto dto = ItemRequestMapper.toItemRequestDto(itemRequest);
+        ItemRequestDto dto = itemRequestMapper.toItemRequestDto(itemRequest);
 
         assertEquals(dto.getId(), itemRequest.getId());
         assertEquals(dto.getDescription(), itemRequest.getDescription());
@@ -32,7 +33,7 @@ public class ItemRequestMapperTest {
 
     @Test
     public void toItemRequestTest() {
-        ItemRequest newItemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
+        ItemRequest newItemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
 
         assertEquals(newItemRequest.getId(), itemRequestDto.getId());
         assertEquals(newItemRequest.getDescription(), itemRequestDto.getDescription());

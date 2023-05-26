@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class CommentMapperTest {
     private Comment comment;
     private CommentDto commentDto;
-
+    private final CommentMapper commentMapper = new CommentMapper();
     @BeforeEach
     private void beforeEach() {
         comment = new Comment(1L, "Text", new Item(), new User(), null);
@@ -24,7 +24,7 @@ public class CommentMapperTest {
 
     @Test
     public void toCommentDtoTest() {
-        CommentDto dto = CommentMapper.toDto(comment);
+        CommentDto dto = commentMapper.toDto(comment);
 
         assertEquals(dto.getId(), comment.getId());
         assertEquals(dto.getText(), comment.getText());
@@ -32,7 +32,7 @@ public class CommentMapperTest {
 
     @Test
     public void toCommentModelTest() {
-        Comment newComment = CommentMapper.toComment(commentDto);
+        Comment newComment = commentMapper.toComment(commentDto);
 
         assertEquals(newComment.getId(), commentDto.getId());
         assertEquals(newComment.getText(), commentDto.getText());

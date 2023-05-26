@@ -20,11 +20,15 @@ import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(ItemController.class)
 @AutoConfigureMockMvc
@@ -145,7 +149,7 @@ public class ItemControllerTest {
     @Test
     @SneakyThrows
     public void getAllTest() {
-        when(itemService.getAllByUserId(any(Long.class), any(Integer.class), any(Integer.class)))
+        when(itemService.getAllByUserId(any(Long.class), any()))
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/items")
@@ -156,13 +160,13 @@ public class ItemControllerTest {
                 .andExpect(content().json("[]"));
 
         verify(itemService, times(1))
-                .getAllByUserId(any(Long.class), any(Integer.class), any(Integer.class));
+                .getAllByUserId(any(Long.class), any());
     }
 
     @Test
     @SneakyThrows
     public void findByRequestTest() throws Exception {
-        when(itemService.findByRequest(any(String.class), any(Integer.class), any(Integer.class)))
+        when(itemService.findByRequest(any(String.class), any()))
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/items/search")
@@ -174,6 +178,6 @@ public class ItemControllerTest {
                 .andExpect(content().json("[]"));
 
         verify(itemService, times(1))
-                .findByRequest(any(String.class), any(Integer.class), any(Integer.class));
+                .findByRequest(any(String.class), any());
     }
 }

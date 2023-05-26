@@ -26,17 +26,19 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final ItemRequestRepository itemRequestRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
+    private final ItemRequestMapper itemRequestMapper = new ItemRequestMapper();
+    private final ItemMapper itemMapper = new ItemMapper();
 
     @Transactional
     @Override
     public ItemRequestDto create(Long userId, ItemRequestDto itemRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
-        ItemRequest itemRequest = ItemRequestMapper.toItemRequest(itemRequestDto);
+        ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setCreated(LocalDateTime.now());
         itemRequest.setRequestor(user);
         itemRequestRepository.save(itemRequest);
-        return ItemRequestMapper.toItemRequestDto(itemRequest);
+        return itemRequestMapper.toItemRequestDto(itemRequest);
     }
 
     @Transactional(readOnly = true)
@@ -44,9 +46,9 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getAllByUserId(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
-        List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findAllByRequestorIdOrderByCreatedAsc(userId)
+        List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findByRequestorIdOrderByCreatedAsc(userId)
                 .stream()
-                .map(ItemRequestMapper::toItemRequestDto)
+                .map(itemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
         itemRequestDtos.forEach(this::setItemsToItemRequestDto);
         return itemRequestDtos;
@@ -57,10 +59,10 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public List<ItemRequestDto> getAll(int from, int size, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
-        List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(user,
+        List<ItemRequestDto> itemRequestDtos = itemRequestRepository.findByRequestorNotLikeOrderByCreatedAsc(user,
                         PageRequest.of(from, size))
                 .stream()
-                .map(ItemRequestMapper::toItemRequestDto)
+                .map(itemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
         itemRequestDtos.forEach(this::setItemsToItemRequestDto);
         return itemRequestDtos;
@@ -73,15 +75,15 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
         ItemRequest itemRequest = itemRequestRepository.findById(requestId)
                 .orElseThrow(() -> new ObjectNotFoundException("request with id:" + requestId + " not found error"));
-        ItemRequestDto itemRequestDto = ItemRequestMapper.toItemRequestDto(itemRequest);
+        ItemRequestDto itemRequestDto = itemRequestMapper.toItemRequestDto(itemRequest);
         setItemsToItemRequestDto(itemRequestDto);
         return itemRequestDto;
     }
 
     private void setItemsToItemRequestDto(ItemRequestDto itemRequestDto) {
-        itemRequestDto.setItems(itemRepository.findAllByRequestId(itemRequestDto.getId())
+        itemRequestDto.setItems(itemRepository.findByRequestId(itemRequestDto.getId())
                 .stream()
-                .map(ItemMapper::toDto)
+                .map(itemMapper::toDto)
                 .collect(Collectors.toList()));
     }
 }

@@ -20,10 +20,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class ItemRequestServiceTest {
@@ -74,7 +75,7 @@ public class ItemRequestServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(itemRequestRepository
-                .findAllByRequestorIdOrderByCreatedAsc(any(Long.class)))
+                .findByRequestorIdOrderByCreatedAsc(any(Long.class)))
                 .thenReturn(new ArrayList<>());
 
         List<ItemRequestDto> result = itemRequestService.getAllByUserId(1L);
@@ -88,7 +89,7 @@ public class ItemRequestServiceTest {
         when(userRepository.findById(any(Long.class)))
                 .thenReturn(Optional.ofNullable(user));
 
-        when(itemRequestRepository.findAllByRequestorNotLikeOrderByCreatedAsc(any(User.class), any(Pageable.class)))
+        when(itemRequestRepository.findByRequestorNotLikeOrderByCreatedAsc(any(User.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         List<ItemRequestDto> result = itemRequestService.getAll(0, 10, 1L);
@@ -105,7 +106,7 @@ public class ItemRequestServiceTest {
         when(itemRequestRepository.findById(any(Long.class)))
                 .thenReturn(Optional.ofNullable(itemRequest));
 
-        when(itemRepository.findAllByRequestId(any(Long.class)))
+        when(itemRepository.findByRequestId(any(Long.class)))
                 .thenReturn(new ArrayList<>());
 
 

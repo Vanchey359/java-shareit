@@ -34,8 +34,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -68,15 +70,17 @@ public class ItemServiceTest {
     private CommentDto commentDto;
 
     private ItemRequest itemRequest;
+    private final ItemMapper itemMapper = new ItemMapper();
+    private final CommentMapper commentMapper = new CommentMapper();
 
     @BeforeEach
     public void beforeEach() {
         user = new User(1L, "Ivan", "Averin@yandex.ru");
         itemRequest = new ItemRequest(1L, "description", new User(2L, "Mike", "Mike@yandex.ru"), LocalDateTime.now());
         item = new Item(1L, "Item", "Description", true, user, itemRequest);
-        itemDto = ItemMapper.toDto(item);
+        itemDto = itemMapper.toDto(item);
         comment = new Comment(1L, "comment", item, user, LocalDateTime.now());
-        commentDto = CommentMapper.toDto(comment);
+        commentDto = commentMapper.toDto(comment);
         booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, user, BookingStatus.APPROVED);
     }
 
@@ -172,10 +176,10 @@ public class ItemServiceTest {
 
     @Test
     public void findAllItemsTest() {
-        when(itemRepository.findAllByOwnerId(any(Long.class), any(Pageable.class)))
+        when(itemRepository.findByOwnerId(any(Long.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
-        List<ItemDto> result = itemService.getAllByUserId(1L, 0, 10);
+        List<ItemDto> result = itemService.getAllByUserId(1L, Pageable.unpaged());
         assertNotNull(result);
         assertTrue(result.isEmpty());
     }
@@ -185,7 +189,7 @@ public class ItemServiceTest {
         when(itemRepository.findAll(any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(item)));
 
-        List<Item> result = itemService.findByRequest("Item", 0, 10);
+        List<Item> result = itemService.findByRequest("Item", Pageable.unpaged());
 
         assertNotNull(result);
         assertEquals(result.get(0).getId(), item.getId());
@@ -201,7 +205,7 @@ public class ItemServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(any(Long.class), any(Long.class), any(BookingStatus.class), any(LocalDateTime.class)))
+                .findByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(any(Long.class), any(Long.class), any(BookingStatus.class), any(LocalDateTime.class)))
                 .thenReturn(Collections.emptyList());
 
         BadRequestException result = assertThrows(BadRequestException.class, () -> {

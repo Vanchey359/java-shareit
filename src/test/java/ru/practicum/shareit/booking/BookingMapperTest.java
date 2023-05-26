@@ -17,6 +17,7 @@ public class BookingMapperTest {
 
     private Booking booking;
     private BookingBriefDto bookingBriefDto;
+    private final BookingMapper bookingMapper = new BookingMapper();
 
     @BeforeEach
     private void beforeEach() {
@@ -33,7 +34,7 @@ public class BookingMapperTest {
 
     @Test
     public void toBookingDtoTest() {
-        BookingDto dto = BookingMapper.toDto(booking);
+        BookingDto dto = bookingMapper.toDto(booking);
 
         assertEquals(dto.getId(), booking.getId());
         assertEquals(dto.getStart(), booking.getStart());
@@ -42,7 +43,7 @@ public class BookingMapperTest {
 
     @Test
     public void bookingBriefDtoTest() {
-        BookingBriefDto dto = BookingMapper.toBriefDto(booking);
+        BookingBriefDto dto = bookingMapper.toBriefDto(booking);
 
         assertEquals(dto.getId(), booking.getId());
         assertEquals(dto.getStart(), booking.getStart());
@@ -51,7 +52,7 @@ public class BookingMapperTest {
 
     @Test
     public void toBookingTest() {
-        Booking newBooking = BookingMapper.toBooking(bookingBriefDto);
+        Booking newBooking = bookingMapper.toBooking(bookingBriefDto);
 
         assertEquals(newBooking.getStart(), bookingBriefDto.getStart());
         assertEquals(newBooking.getEnd(), bookingBriefDto.getEnd());

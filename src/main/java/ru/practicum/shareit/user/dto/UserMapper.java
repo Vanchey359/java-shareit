@@ -10,15 +10,15 @@ import java.util.List;
 @Component
 @Service
 public class UserMapper {
-    public static UserDto toDto(User user) {
+    public UserDto toDto(User user) {
         return new UserDto(user.getId(), user.getName(), user.getEmail());
     }
 
-    public static User toUser(UserDto userDto) {
+    public User toUser(UserDto userDto) {
         return new User(userDto.getId(), userDto.getName(), userDto.getEmail());
     }
 
-    public static List<UserDto> toDtos(List<User> users) {
+    public List<UserDto> toDtos(List<User> users) {
         List<UserDto> result = new ArrayList<>();
         for (User user : users) {
             result.add(toDto(user));

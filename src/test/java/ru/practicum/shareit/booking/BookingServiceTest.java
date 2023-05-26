@@ -27,7 +27,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -52,6 +55,7 @@ public class BookingServiceTest {
     private Booking booking;
     private BookingDto bookingDto;
     private BookingBriefDto bookingBriefDto;
+    private final BookingMapper  bookingMapper = new BookingMapper();
 
     @BeforeEach
     public void beforeEach() {
@@ -59,8 +63,8 @@ public class BookingServiceTest {
         owner = new User(2L, "Mike", "Mike@yandex.ru");
         item = new Item(1L, "Item", "Description", true, owner, null);
         booking = new Booking(1L, LocalDateTime.now(), LocalDateTime.now().plusDays(1), item, user, BookingStatus.APPROVED);
-        bookingDto = BookingMapper.toDto(booking);
-        bookingBriefDto = BookingMapper.toBriefDto(booking);
+        bookingDto = bookingMapper.toDto(booking);
+        bookingBriefDto = bookingMapper.toBriefDto(booking);
     }
 
     @Test
@@ -119,10 +123,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBookerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
+                .findByBookerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.REJECTED, 0, 10);
+        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.REJECTED, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -134,10 +138,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBookerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
+                .findByBookerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.WAITING, 0, 10);
+        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.WAITING, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -149,10 +153,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBookerAndStartBeforeAndEndAfter(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .findByBookerAndStartBeforeAndEndAfter(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.CURRENT, 0, 10);
+        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.CURRENT, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -164,10 +168,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBookerAndStartAfter(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
+                .findByBookerAndStartAfter(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.FUTURE, 0, 10);
+        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.FUTURE, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -179,10 +183,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBookerAndEndBefore(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
+                .findByBookerAndEndBefore(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.PAST, 0, 10);
+        List<BookingDto> result = bookingService.getAllByUser(1L, BookingState.PAST, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -194,11 +198,11 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByBooker(any(User.class), any(Pageable.class)))
+                .findByBooker(any(User.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
         List<BookingDto> result = bookingService
-                .getAllByUser(1L, BookingState.ALL, 0, 10);
+                .getAllByUser(1L, BookingState.ALL, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -212,10 +216,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByItemOwnerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
+                .findByItemOwnerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.WAITING, 0, 10);
+        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.WAITING, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -228,10 +232,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByItemOwnerAndStartBeforeAndEndAfter(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
+                .findByItemOwnerAndStartBeforeAndEndAfter(any(User.class), any(LocalDateTime.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.CURRENT, 0, 10);
+        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.CURRENT, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -244,10 +248,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByItemOwnerAndStartAfter(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
+                .findByItemOwnerAndStartAfter(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.FUTURE, 0, 10);
+        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.FUTURE, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -260,10 +264,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByItemOwnerAndEndBefore(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
+                .findByItemOwnerAndEndBefore(any(User.class), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.PAST, 0, 10);
+        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.PAST, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -276,10 +280,10 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByItemOwner(any(User.class), any(Pageable.class)))
+                .findByItemOwner(any(User.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
-        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.ALL, 0, 10);
+        List<BookingDto> result = bookingService.getAllByOwner(1L, BookingState.ALL, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -292,11 +296,11 @@ public class BookingServiceTest {
                 .thenReturn(Optional.ofNullable(user));
 
         when(bookingRepository
-                .findAllByItemOwnerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
+                .findByItemOwnerAndStatusEquals(any(User.class), any(BookingStatus.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(Collections.singletonList(booking)));
 
         List<BookingDto> result = bookingService
-                .getAllByOwner(1L, BookingState.REJECTED, 0, 10);
+                .getAllByOwner(1L, BookingState.REJECTED, Pageable.unpaged());
 
         assertNotNull(result);
         assertFalse(result.isEmpty());
@@ -327,7 +331,7 @@ public class BookingServiceTest {
 
         BadRequestException e = assertThrows(BadRequestException.class,
                 () -> {
-                    bookingService.getAllByUser(1L, BookingState.UNSUPPORTED, 0, 10);
+                    bookingService.getAllByUser(1L, BookingState.UNSUPPORTED, Pageable.unpaged());
                 });
 
         assertNotNull(e);

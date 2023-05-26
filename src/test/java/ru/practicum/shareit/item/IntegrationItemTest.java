@@ -8,7 +8,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
@@ -67,7 +70,7 @@ public class IntegrationItemTest {
                 .exchange("/items", HttpMethod.GET, new HttpEntity<Object>(headers), Item[].class).getBody();
 
         List<Item> itemsFromDB = itemRepository
-                .findAllByOwnerId(responseUser.getBody().getId(), PageRequest.of(0, 10)).toList();
+                .findByOwnerId(responseUser.getBody().getId(), PageRequest.of(0, 10)).toList();
 
         assertEquals(itemsFromController.length, 2);
         assertEquals(itemsFromDB.size(), 2);
