@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemRequestController {
     private final ItemRequestService itemRequestService;
-    private final String USER_HEADER_ID = "X-Sharer-User-Id";
+    private static final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemRequestDto create(@RequestHeader(USER_HEADER_ID) Long userId,

@@ -39,7 +39,7 @@ public class ItemControllerTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final String USER_HEADER_ID = "X-Sharer-User-Id";
+    private static final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @Autowired
     private MockMvc mvc;

@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookingController.class)
 @AutoConfigureMockMvc
 public class BookingControllerTest {
-    private final String USER_HEADER_ID = "X-Sharer-User-Id";
+    private static final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @MockBean
     private BookingService bookingService;
