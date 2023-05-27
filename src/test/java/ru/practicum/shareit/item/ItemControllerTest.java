@@ -39,7 +39,7 @@ public class ItemControllerTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private final String userHeaderId = "X-Sharer-User-Id";
+    private final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @Autowired
     private MockMvc mvc;
@@ -68,7 +68,7 @@ public class ItemControllerTest {
 
         mvc.perform(post("/items")
                         .content(mapper.writeValueAsString(inputDto))
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -96,7 +96,7 @@ public class ItemControllerTest {
 
         mvc.perform(post("/items/1/comment")
                         .content(mapper.writeValueAsString(inputCommentDto))
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -121,7 +121,7 @@ public class ItemControllerTest {
         mvc.perform(patch("/items/1")
                         .content(mapper.writeValueAsString(inputDto))
                         .characterEncoding(StandardCharsets.UTF_8)
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -139,7 +139,7 @@ public class ItemControllerTest {
                 .thenReturn(itemDto);
 
         mvc.perform(get("/items/1")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class));
 
@@ -153,7 +153,7 @@ public class ItemControllerTest {
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/items")
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())
@@ -170,7 +170,7 @@ public class ItemControllerTest {
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/items/search")
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .param("text", "any text")
                         .param("from", "0")
                         .param("size", "10"))

@@ -37,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(BookingController.class)
 @AutoConfigureMockMvc
 public class BookingControllerTest {
-    private final String userHeaderId = "X-Sharer-User-Id";
+    private final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @MockBean
     private BookingService bookingService;
@@ -71,7 +71,7 @@ public class BookingControllerTest {
 
         mvc.perform(post("/bookings")
                         .content(mapper.writeValueAsString(inputBookingDto))
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -91,7 +91,7 @@ public class BookingControllerTest {
 
         mvc.perform(patch("/bookings/1")
                         .param("approved", "true")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class));
 
@@ -106,7 +106,7 @@ public class BookingControllerTest {
                 .thenReturn(bookingDto);
 
         mvc.perform(get("/bookings/1")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(bookingDto.getId()), Long.class));
 
@@ -121,7 +121,7 @@ public class BookingControllerTest {
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/bookings")
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .param("from", "0")
                         .param("size", "10")
                         .param("state", "ALL"))
@@ -139,7 +139,7 @@ public class BookingControllerTest {
                 .thenReturn(new ArrayList<>());
 
         mvc.perform(get("/bookings/owner")
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .param("from", "0")
                         .param("size", "10"))
                 .andExpect(status().isOk())

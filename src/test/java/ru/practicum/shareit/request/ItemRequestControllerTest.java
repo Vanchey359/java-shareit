@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemRequestController.class)
 @AutoConfigureMockMvc
 public class ItemRequestControllerTest {
-    private final String userHeaderId = "X-Sharer-User-Id";
+    private final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @MockBean
     private ItemRequestService itemRequestService;
@@ -60,7 +60,7 @@ public class ItemRequestControllerTest {
 
         mvc.perform(post("/requests")
                         .content(mapper.writeValueAsString(itemRequestDto))
-                        .header(userHeaderId, 1)
+                        .header(USER_HEADER_ID, 1)
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -79,7 +79,7 @@ public class ItemRequestControllerTest {
                 .thenReturn(Collections.emptyList());
 
         mvc.perform(get("/requests")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
 
@@ -87,7 +87,7 @@ public class ItemRequestControllerTest {
                 .thenReturn(List.of(itemResponce));
 
         mvc.perform(get("/requests")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(itemResponce))));
 
@@ -103,7 +103,7 @@ public class ItemRequestControllerTest {
         mvc.perform(get("/requests/all")
                         .param("from", "0")
                         .param("size", "10")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json("[]"));
 
@@ -113,7 +113,7 @@ public class ItemRequestControllerTest {
         mvc.perform(get("/requests/all")
                         .param("from", "0")
                         .param("size", "10")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(content().json(mapper.writeValueAsString(List.of(itemResponce))));
 
@@ -129,7 +129,7 @@ public class ItemRequestControllerTest {
                 .thenReturn(itemResponce);
 
         mvc.perform(get("/requests/1")
-                        .header(userHeaderId, 1))
+                        .header(USER_HEADER_ID, 1))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(itemResponce.getId()), Long.class))
                 .andExpect(jsonPath("$.description", is(itemResponce.getDescription()), String.class))

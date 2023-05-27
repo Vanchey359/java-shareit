@@ -14,6 +14,7 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -21,23 +22,23 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemRequestController {
     private final ItemRequestService itemRequestService;
-    private final String userHeaderId = "X-Sharer-User-Id";
+    private final String USER_HEADER_ID = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemRequestDto create(@RequestHeader(userHeaderId) Long userId,
+    public ItemRequestDto create(@RequestHeader(USER_HEADER_ID) Long userId,
                                  @Valid @RequestBody ItemRequestDto itemRequestDto) {
         return itemRequestService.create(userId, itemRequestDto);
     }
 
     @GetMapping
-    public List<ItemRequestDto> getAllByUser(@RequestHeader(userHeaderId) Long userId) {
+    public List<ItemRequestDto> getAllByUser(@RequestHeader(USER_HEADER_ID) Long userId) {
         return itemRequestService.getAllByUserId(userId);
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAll(@RequestParam(defaultValue = "0") int from,
-                                       @RequestParam(defaultValue = "10") int size,
-                                       @RequestHeader(userHeaderId) Long userId) {
+    public List<ItemRequestDto> getAll(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                       @RequestParam(defaultValue = "10") @PositiveOrZero int size,
+                                       @RequestHeader(USER_HEADER_ID) Long userId) {
         if (from < 0 || size <= 0) {
             throw new BadRequestException("Error - wrong searching parameters!");
         }
@@ -45,7 +46,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestDto getById(@PathVariable Long requestId, @RequestHeader(userHeaderId) Long userId) {
+    public ItemRequestDto getById(@PathVariable Long requestId, @RequestHeader(USER_HEADER_ID) Long userId) {
         return itemRequestService.getById(requestId, userId);
     }
 }

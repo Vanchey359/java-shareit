@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,11 +22,13 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
     private final ItemService itemService;
     private final ItemMapper itemMapper = new ItemMapper();
@@ -52,8 +55,8 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getAllByUserId(@NotNull @RequestHeader(USER_HEADER_ID) Long userId,
-                                        @RequestParam(defaultValue = "0") int from,
-                                        @RequestParam(defaultValue = "10") int size) {
+                                        @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                        @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
         checkSearchingParams(from, size);
         Pageable pageRequest = PageRequest.of(from / size, size);
         return itemService.getAllByUserId(userId, pageRequest);
@@ -61,8 +64,8 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> findByRequest(@RequestParam String text,
-                                       @RequestParam(defaultValue = "0") int from,
-                                       @RequestParam(defaultValue = "10") int size) {
+                                       @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                       @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
         checkSearchingParams(from, size);
         Pageable pageRequest = PageRequest.of(from / size, size);
         List<Item> foundItems = itemService.findByRequest(text, pageRequest);

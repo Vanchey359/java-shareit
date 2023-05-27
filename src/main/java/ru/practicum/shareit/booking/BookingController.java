@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,11 +21,13 @@ import ru.practicum.shareit.booking.model.BookingState;
 import ru.practicum.shareit.exception.BadRequestException;
 
 import javax.validation.Valid;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
+@Validated
 public class BookingController {
     private final BookingService bookingService;
     private static final String USER_HEADER_ID = "X-Sharer-User-Id";
@@ -44,8 +47,8 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getAllByOwner(@RequestHeader(USER_HEADER_ID) Long userId,
                                           @RequestParam(defaultValue = "ALL") BookingState state,
-                                          @RequestParam(defaultValue = "0") int from,
-                                          @RequestParam(defaultValue = "10") int size) {
+                                          @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                          @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
         checkSearchingParams(from, size);
         Pageable pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
         return bookingService.getAllByOwner(userId, state, pageRequest);
@@ -54,8 +57,8 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getAllByUser(@RequestHeader(USER_HEADER_ID) Long userId,
                                          @RequestParam(defaultValue = "ALL") BookingState state,
-                                         @RequestParam(defaultValue = "0") int from,
-                                         @RequestParam(defaultValue = "10") int size) {
+                                         @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                         @RequestParam(defaultValue = "10") @PositiveOrZero int size) {
         checkSearchingParams(from, size);
         Pageable pageRequest = PageRequest.of(from / size, size, Sort.by("start").descending());
         return bookingService.getAllByUser(userId, state, pageRequest);

@@ -10,23 +10,23 @@ import java.util.List;
 @Component
 public class ItemMapper {
     public ItemDto toDto(Item item) {
-        ItemDto mappedItem = new ItemDto();
-        mappedItem.setId(item.getId());
-        mappedItem.setName(item.getName());
-        mappedItem.setDescription(item.getDescription());
-        mappedItem.setAvailable(item.getAvailable());
-        mappedItem.setRequestId(item.getRequest() != null ? item.getRequest().getId() : null);
-        return mappedItem;
+        ItemDto dto = new ItemDto();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        dto.setRequestId(item.getRequest() != null ? item.getRequest().getId() : null);
+        return dto;
     }
 
     public Item toItem(ItemDto itemDto, User owner) {
-        Item mappedItem = new Item();
-        mappedItem.setId(itemDto.getId());
-        mappedItem.setName(itemDto.getName());
-        mappedItem.setDescription(itemDto.getDescription());
-        mappedItem.setAvailable(itemDto.getAvailable());
-        mappedItem.setOwner(owner);
-        return mappedItem;
+        Item item = new Item();
+        item.setId(itemDto.getId());
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+        item.setOwner(owner);
+        return item;
     }
 
     public List<ItemDto> toDtos(List<Item> items) {
