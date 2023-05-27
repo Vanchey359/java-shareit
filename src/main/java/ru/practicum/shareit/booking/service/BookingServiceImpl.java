@@ -1,12 +1,13 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.BookingState;
-import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingBriefDto;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Booking;
@@ -29,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final ItemRepository itemRepository;
-    private final BookingMapper bookingMapper;
+    private final BookingMapper bookingMapper = new BookingMapper();
     private final Sort sort = Sort.by(Sort.Direction.DESC, "start");
 
     @Transactional
@@ -82,35 +83,35 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDto> getAllByOwner(Long userId, BookingState state) {
+    public List<BookingDto> getAllByOwner(Long userId, BookingState state, Pageable pageRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookings.addAll(bookingRepository.findAllByItemOwner(user, sort));
+                bookings.addAll(bookingRepository.findByItemOwner(user, pageRequest).toList());
                 break;
 
             case FUTURE:
-                bookings.addAll(bookingRepository.findAllByItemOwnerAndStartAfter(user, LocalDateTime.now(), sort));
+                bookings.addAll(bookingRepository.findByItemOwnerAndStartAfter(user, LocalDateTime.now(), pageRequest).toList());
                 break;
 
             case CURRENT:
-                bookings.addAll(bookingRepository.findAllByItemOwnerAndStartBeforeAndEndAfter(user,
-                        LocalDateTime.now(), LocalDateTime.now(), sort));
+                bookings.addAll(bookingRepository.findByItemOwnerAndStartBeforeAndEndAfter(user,
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest).toList());
                 break;
 
             case PAST:
-                bookings.addAll(bookingRepository.findAllByItemOwnerAndEndBefore(user,
-                        LocalDateTime.now(), sort));
+                bookings.addAll(bookingRepository.findByItemOwnerAndEndBefore(user,
+                        LocalDateTime.now(), pageRequest).toList());
                 break;
 
             case WAITING:
-                bookings.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(user, BookingStatus.WAITING, sort));
+                bookings.addAll(bookingRepository.findByItemOwnerAndStatusEquals(user, BookingStatus.WAITING, pageRequest).toList());
                 break;
 
             case REJECTED:
-                bookings.addAll(bookingRepository.findAllByItemOwnerAndStatusEquals(user, BookingStatus.REJECTED, sort));
+                bookings.addAll(bookingRepository.findByItemOwnerAndStatusEquals(user, BookingStatus.REJECTED, pageRequest).toList());
                 break;
 
             default:
@@ -122,36 +123,36 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<BookingDto> getAllByUser(Long userId, BookingState state) {
+    public List<BookingDto> getAllByUser(Long userId, BookingState state, Pageable pageRequest) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("Unable to find bookings - " +
                         "user id not found " + userId));
         List<Booking> bookingDtoList = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookingDtoList.addAll(bookingRepository.findAllByBooker(user, sort));
+                bookingDtoList.addAll(bookingRepository.findByBooker(user, pageRequest).toList());
                 break;
 
             case REJECTED:
-                bookingDtoList.addAll(bookingRepository.findAllByBookerAndStatusEquals(user, BookingStatus.REJECTED, sort));
+                bookingDtoList.addAll(bookingRepository.findByBookerAndStatusEquals(user, BookingStatus.REJECTED, pageRequest).toList());
                 break;
 
             case CURRENT:
-                bookingDtoList.addAll(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfter(userId,
-                        LocalDateTime.now(), LocalDateTime.now(), sort));
+                bookingDtoList.addAll(bookingRepository.findByBookerAndStartBeforeAndEndAfter(user,
+                        LocalDateTime.now(), LocalDateTime.now(), pageRequest).toList());
                 break;
 
             case PAST:
-                bookingDtoList.addAll(bookingRepository.findAllByBookerAndEndBefore(user,
-                        LocalDateTime.now(), sort));
+                bookingDtoList.addAll(bookingRepository.findByBookerAndEndBefore(user,
+                        LocalDateTime.now(), pageRequest).toList());
                 break;
 
             case WAITING:
-                bookingDtoList.addAll(bookingRepository.findAllByBookerAndStatusEquals(user, BookingStatus.WAITING, sort));
+                bookingDtoList.addAll(bookingRepository.findByBookerAndStatusEquals(user, BookingStatus.WAITING, pageRequest).toList());
                 break;
 
             case FUTURE:
-                bookingDtoList.addAll(bookingRepository.findAllByBookerAndStartAfter(user, LocalDateTime.now(), sort));
+                bookingDtoList.addAll(bookingRepository.findByBookerAndStartAfter(user, LocalDateTime.now(), pageRequest).toList());
                 break;
 
             default:

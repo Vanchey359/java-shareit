@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,16 +10,20 @@ import ru.practicum.shareit.booking.dto.BookingBriefDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.BookingStatus;
 import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.booking.storage.BookingRepository;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.BadRequestException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.WrongUserException;
-import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.item.dto.CommentMapper;
+import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.CommentRepository;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.item.service.ItemService;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
@@ -36,9 +41,10 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-    private final CommentMapper commentMapper;
-    private final ItemMapper itemMapper;
-    private final BookingMapper bookingMapper;
+    private final ItemRequestRepository itemRequestRepository;
+    private final CommentMapper commentMapper = new CommentMapper();
+    private final ItemMapper itemMapper = new ItemMapper();
+    private final BookingMapper bookingMapper = new BookingMapper();
 
     @Transactional
     public ItemDto create(ItemDto itemDto, Long userId) {
@@ -46,6 +52,11 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
 
         Item item = itemMapper.toItem(itemDto, user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new ObjectNotFoundException("request with id:" + itemDto.getRequestId() + " not found error"));
+            item.setRequest(itemRequest);
+        }
         return itemMapper.toDto(itemRepository.save(item));
     }
 
@@ -108,17 +119,18 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<ItemDto> getAllByUserId(Long userId) {
-        List<Item> items = itemRepository.findByOwnerId(userId);
-        if (items.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<ItemDto> itemDtoList = items.stream()
+    public List<ItemDto> getAllByUserId(Long userId, Pageable pageRequest) {
+        List<ItemDto> itemDtos = itemRepository.findByOwnerId(userId, pageRequest)
+                .stream()
                 .map(itemMapper::toDto)
                 .collect(Collectors.toList());
 
-        for (ItemDto itemDto : itemDtoList) {
+        if (itemDtos.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+
+        for (ItemDto itemDto : itemDtos) {
             itemDto.setComments(commentRepository.findByItemId(itemDto.getId())
                     .stream().map(commentMapper::toDto).collect(Collectors.toList()));
 
@@ -133,9 +145,9 @@ public class ItemServiceImpl implements ItemService {
             itemDto.setNextBooking(nextBooking.isEmpty() ? new BookingBriefDto() : bookingMapper.toBriefDto(nextBooking.get(0)));
         }
 
-        itemDtoList.sort(Comparator.comparing(o -> o.getLastBooking().getStart(), Comparator.nullsLast(Comparator.reverseOrder())));
+        itemDtos.sort(Comparator.comparing(o -> o.getLastBooking().getStart(), Comparator.nullsLast(Comparator.reverseOrder())));
 
-        for (ItemDto itemDto : itemDtoList) {
+        for (ItemDto itemDto : itemDtos) {
             if (itemDto.getLastBooking().getBookerId() == null) {
                 itemDto.setLastBooking(null);
             }
@@ -144,12 +156,12 @@ public class ItemServiceImpl implements ItemService {
             }
         }
 
-        return itemDtoList;
+        return itemDtos;
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Item> findByRequest(String request) {
+    public List<Item> findByRequest(String request, Pageable pageRequest) {
         if (request == null || request.isBlank()) {
             return new ArrayList<>();
         }
@@ -157,7 +169,11 @@ public class ItemServiceImpl implements ItemService {
         List<Item> result = new ArrayList<>();
         request = request.toLowerCase();
 
-        for (Item item : itemRepository.findAll()) {
+        List<Item> itemsList = itemRepository.findAll(pageRequest)
+                .stream()
+                .collect(Collectors.toList());
+
+        for (Item item : itemsList) {
             String name = item.getName().toLowerCase();
             String description = item.getDescription().toLowerCase();
 
@@ -176,7 +192,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new ObjectNotFoundException("user with id:" + userId + " not found error"));
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new ObjectNotFoundException("item with id:" + itemId + " not found error"));
-        if (bookingRepository.findAllByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(userId, itemId, BookingStatus.APPROVED,
+        if (bookingRepository.findByBookerIdAndItemIdAndStatusEqualsAndEndIsBefore(userId, itemId, BookingStatus.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
             throw new BadRequestException("Wrong item for leaving comment");
         }
