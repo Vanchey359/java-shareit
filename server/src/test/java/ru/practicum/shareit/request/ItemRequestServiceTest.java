@@ -89,7 +89,7 @@ public class ItemRequestServiceTest {
         when(userRepository.findById(any(Long.class)))
                 .thenReturn(Optional.ofNullable(user));
 
-        when(itemRequestRepository.findByRequestorNotLikeOrderByCreatedAsc(any(User.class), any(Pageable.class)))
+        when(itemRequestRepository.findByRequestorIsNot(any(User.class), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(new ArrayList<>()));
 
         List<ItemRequestDto> result = itemRequestService.getAll(0, 10, 1L);
