@@ -37,9 +37,6 @@ public class ItemRequestController {
     public List<ItemRequestDto> getAll(@RequestParam(defaultValue = "0") int from,
                                        @RequestParam(defaultValue = "10") int size,
                                        @RequestHeader(USER_HEADER_ID) Long userId) {
-        if (from < 0 || size <= 0) {
-            throw new BadRequestException("Error - wrong searching parameters!");
-        }
         return itemRequestService.getAll(from, size, userId);
     }
 
